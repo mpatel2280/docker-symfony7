@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
 
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,19 +21,23 @@ class ProductController extends AbstractController
     // }
 
     #[Route('/product', name: 'create_product')]
-    public function createProduct(EntityManagerInterface $entityManager): Response
+    public function createProduct(EntityManagerInterface $entityManager, LoggerInterface $logger): Response
     {
         $product = new Product();
-        $product->setName('Monitor');
+        $product->setName('Keypad');
         $price = random_int(0, 10000);
         $product->setPrice($price);
-        $product->setDescription('stylish!');
+        $product->setDescription('Ergonomic and stylish!');
 
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $entityManager->persist($product);
 
         // actually executes the queries (i.e. the INSERT query)
         $entityManager->flush();
+
+        $logger->debug('Saved new product with id ', [
+            'productId >>>>>>>>>>>>>>>> ' => $product->getId(),
+        ]);
 
         return new Response('Saved new product with id '.$product->getId());
     }
