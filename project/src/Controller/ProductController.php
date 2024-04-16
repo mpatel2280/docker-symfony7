@@ -23,10 +23,10 @@ class ProductController extends AbstractController
     public function createProduct(EntityManagerInterface $entityManager): Response
     {
         $product = new Product();
-        $product->setName('Keyboard');
+        $product->setName('Monitor');
         $price = random_int(0, 10000);
         $product->setPrice($price);
-        $product->setDescription('Ergonomic and stylish!');
+        $product->setDescription('stylish!');
 
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
         $entityManager->persist($product);
