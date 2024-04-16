@@ -22,7 +22,7 @@ security:
 
             # https://symfony.com/doc/current/security/impersonating_user.html
             switch_user: true
-            
+
             remember_me:
                 secret:   '%kernel.secret%' # required
                 lifetime: 604800 # 1 week in seconds
@@ -38,6 +38,13 @@ security:
                 # checkbox in the login form (see below), uncomment the
                 # following line to always enable it.
                 #always_remember_me: true
+                
+            json_login:
+                # api_login is a route we will create below
+                check_path: api_login
+
+            # http_basic:
+            #     realm: Secured Area
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
