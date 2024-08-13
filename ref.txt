@@ -1,3 +1,16 @@
 http://localhost:8742/login
 m1@s7.com / 123456
 
+Sonata Admin
+http://localhost:8742/admin/dashboard
+
+php bin/console doctrine:schema:create
+php bin/console doctrine:schema:update --force
+
+php bin/console doctrine:migrations:diff
+php bin/console doctrine:migrations:migrate
+
+https://symfonycasts.com/blog/clean-up-migrations
+
+bin/console doctrine:schema:drop --force
+bin/console doctrine:migrations:migrate
