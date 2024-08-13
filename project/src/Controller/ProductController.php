@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
+use App\Service\HelperService;
+
 
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +21,13 @@ class ProductController extends AbstractController
     //         'controller_name' => 'ProductController',
     //     ]);
     // }
+
+    private $helperService;
+
+    public function __construct(HelperService $helperService)
+    {
+        $this->helperService = $helperService;
+    }
 
     #[Route('/product', name: 'create_product')]
     public function createProduct(EntityManagerInterface $entityManager, LoggerInterface $logger): Response
@@ -52,8 +61,12 @@ class ProductController extends AbstractController
                 'No product found for id '.$id
             );
         }
+        $appSecret = $_SERVER['APP_SECRET']; // $this->getParameter('app.secret');
 
-        return new Response('Check out this great product: '.$product->getName() . ' at ' . $product->getPrice());
+        $date = new \DateTime();
+        $formattedDate = $this->helperService->formatDate($date);
+        
+        return new Response('Check out this great product: '.$product->getName() . ' at ' . $product->getPrice() . ' appSecret test : ' . $appSecret . ' Helper test : ' . $formattedDate.time());
 
         // or render a template
         // in the template, print things with {{ product.name }}
