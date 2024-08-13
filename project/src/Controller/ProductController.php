@@ -7,7 +7,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use App\Service\HelperService;
-
+use App\Event\ProductCreatedEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,10 +24,12 @@ class ProductController extends AbstractController
     // }
 
     private $helperService;
+    private $dispatcher;
 
-    public function __construct(HelperService $helperService)
+    public function __construct(HelperService $helperService, EventDispatcherInterface $dispatcher)
     {
         $this->helperService = $helperService;
+        $this->dispatcher = $dispatcher;
     }
 
     #[Route('/product', name: 'create_product')]
@@ -47,6 +50,10 @@ class ProductController extends AbstractController
         $logger->debug('Saved new product with id ', [
             'productId >>>>>>>>>>>>>>>> ' => $product->getId(),
         ]);
+
+        // Dispatch the ProductCreatedEvent
+        $event = new ProductCreatedEvent($product);
+        $this->dispatcher->dispatch($event, ProductCreatedEvent::NAME);
 
         return new Response('Saved new product with id '.$product->getId());
     }
