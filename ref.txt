@@ -14,3 +14,11 @@ https://symfonycasts.com/blog/clean-up-migrations
 
 bin/console doctrine:schema:drop --force
 bin/console doctrine:migrations:migrate
+
+#Create product command
+php bin/console make:command app:create-product-command
+php bin/console app:create-product-command 'name' '123' 'description'
+OR 
+php bin/console app:create-product 'name' '123' 'description'
+OR
+php bin/console app:add-product 'name' '123' 'description'
