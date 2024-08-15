@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\ProductRepository;
+use App\Service\ProductService;
 
 #[AsCommand(
     name: 'app:create-product-command',
@@ -23,12 +23,12 @@ class CreateProductCommand extends Command
     protected static $defaultName = 'app:create-product-command';
 
     private $entityManager;
-    private $productRepository;
+    private $productService;
 
-    public function __construct(EntityManagerInterface $entityManager, ProductRepository $productRepository)
+    public function __construct(EntityManagerInterface $entityManager, ProductService $productService)
     {
         $this->entityManager = $entityManager;
-        $this->productRepository = $productRepository;
+        $this->productService = $productService;
         parent::__construct();
     }
 
@@ -60,19 +60,9 @@ class CreateProductCommand extends Command
         if ($description) {
             $io->note(sprintf('You passed an argument description: %s', $description));
         }
-
-        $product = new Product();
-        $product->setName($name);
-        $product->setPrice($price);
-        $product->setDescription($description);
         
         // Save the record
-        $this->productRepository->save($product);
-
-       
-        // $this->entityManager->persist($product);
-        // $this->entityManager->flush();
-
+        $this->productService->createProduct($name, $price, $description);
 
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
 
