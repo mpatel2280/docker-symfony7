@@ -11,6 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\ProductRepository;
 
 #[AsCommand(
     name: 'app:create-product-command',
@@ -22,10 +23,12 @@ class CreateProductCommand extends Command
     protected static $defaultName = 'app:create-product-command';
 
     private $entityManager;
+    private $productRepository;
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager, ProductRepository $productRepository)
     {
         $this->entityManager = $entityManager;
+        $this->productRepository = $productRepository;
         parent::__construct();
     }
 
@@ -62,10 +65,13 @@ class CreateProductCommand extends Command
         $product->setName($name);
         $product->setPrice($price);
         $product->setDescription($description);
+        
+        // Save the record
+        $this->productRepository->save($product);
 
-        // Save the user
-        $this->entityManager->persist($product);
-        $this->entityManager->flush();
+       
+        // $this->entityManager->persist($product);
+        // $this->entityManager->flush();
 
 
         $io->success('You have a new command! Now make it your own! Pass --help to see your options.');

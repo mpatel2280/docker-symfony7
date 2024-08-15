@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Event\ProductCreatedEvent;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @extends ServiceEntityRepository<Product>
@@ -16,9 +19,25 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ProductRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $entityManager;
+    private $dispatcher;
+
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager, EventDispatcherInterface $dispatcher)
     {
         parent::__construct($registry, Product::class);
+        $this->entityManager = $entityManager;
+        $this->dispatcher = $dispatcher;
+    }
+
+     // Save Record
+     public function save(Product $product): void
+    {
+        $this->entityManager->persist($product);
+        $this->entityManager->flush();
+
+        // Dispatch the ProductCreatedEvent
+        $event = new ProductCreatedEvent($product);
+        $this->dispatcher->dispatch($event, ProductCreatedEvent::NAME);
     }
 
     //    /**
