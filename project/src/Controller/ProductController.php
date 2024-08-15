@@ -8,7 +8,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use App\Service\HelperService;
 use App\Event\ProductCreatedEvent;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use App\Repository\ProductRepository;
 
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,16 +24,16 @@ class ProductController extends AbstractController
     // }
 
     private $helperService;
-    private $dispatcher;
+    private $productRepository;
 
-    public function __construct(HelperService $helperService, EventDispatcherInterface $dispatcher)
+    public function __construct(HelperService $helperService, ProductRepository $productRepository)
     {
         $this->helperService = $helperService;
-        $this->dispatcher = $dispatcher;
+        $this->productRepository = $productRepository;
     }
 
     #[Route('/product', name: 'create_product')]
-    public function createProduct(EntityManagerInterface $entityManager, LoggerInterface $logger): Response
+    public function createProduct(LoggerInterface $logger): Response
     {
         $product = new Product();
         $product->setName('Keypad');
@@ -42,18 +42,21 @@ class ProductController extends AbstractController
         $product->setDescription('Ergonomic and stylish!');
 
         // tell Doctrine you want to (eventually) save the Product (no queries yet)
-        $entityManager->persist($product);
+       // $entityManager->persist($product);
 
         // actually executes the queries (i.e. the INSERT query)
-        $entityManager->flush();
+        // $entityManager->flush();
+
+        // Save the record
+        $this->productRepository->save($product);
 
         $logger->debug('Saved new product with id ', [
             'productId >>>>>>>>>>>>>>>> ' => $product->getId(),
         ]);
 
         // Dispatch the ProductCreatedEvent
-        $event = new ProductCreatedEvent($product);
-        $this->dispatcher->dispatch($event, ProductCreatedEvent::NAME);
+        // $event = new ProductCreatedEvent($product);
+        // $this->dispatcher->dispatch($event, ProductCreatedEvent::NAME);
 
         return new Response('Saved new product with id '.$product->getId());
     }
