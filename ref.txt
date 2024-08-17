@@ -22,3 +22,8 @@ OR
 php bin/console app:create-product 'name' '123' 'description'
 OR
 php bin/console app:add-product 'name' '123' 'description'
+
+#New Entity
+php bin/console make:entity
+php bin/console make:migration
+php bin/console doctrine:migrations:migrate
